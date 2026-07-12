@@ -1,0 +1,45 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: mindmap
+      POSTGRES_USER: mindmap
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  pgweb:
+    image: sosedoff/pgweb
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      DATABASE_URL: postgres://mindmap:${POSTGRES_PASSWORD}@db:5432/mindmap?sslmode=disable
+    depends_on:
+      - db
+
+  pgbackup:
+    image: prodrigestivill/postgres-backup-local
+    restart: unless-stopped
+    volumes:
+      - ./backups:/backups
+    environment:
+      - TZ=Asia/Bangkok
+      - POSTGRES_HOST=db
+      - POSTGRES_DB=mindmap
+      - POSTGRES_USER=mindmap
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - SCHEDULE=0 */1 * * *
+      - BACKUP_KEEP_MINS=360
+      - BACKUP_KEEP_DAYS=3
+      - BACKUP_KEEP_WEEKS=0
+      - BACKUP_KEEP_MONTHS=0
+      - BACKUP_ON_START=TRUE
+    depends_on:
+      - db
+
+volumes:
+  pgdata:
