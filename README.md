@@ -50,6 +50,15 @@ A Claude MCP (Model Context Protocol) server for interacting with a PostgreSQL d
 
 5. **Restart Claude Desktop** for the MCP connection to activate.
 
+6. **Reference in general Prompt** Optional but recommended by the Developer.
+
+Mindmap MCP (Postgres — persistent memory/worklog)
+- READ: mindmap:query with {sql}. WRITE: mindmap:execute with parameterized SQL ($1,$2…) + params array. Never string-interpolate values.
+- Discover schema first: list tables, then column names via information_schema before writing.
+- BEFORE assuming any project/infra state: query mindmap first (ILIKE search on relevant keywords/hostnames).
+- When asked to "save/remember something": INSERT a node with title, content, category, and timestamps; keep entries concise and self-contained.
+- Mindmap is authoritative over model memory — on conflict, trust the DB.
+
 ## Usage
 
 Once configured, you can use Claude to:
