@@ -1,6 +1,8 @@
-# MindMap - PostgreSQL MCP Server
+# MindMap — PostgreSQL MCP Server
 
 A Claude MCP (Model Context Protocol) server for interacting with a PostgreSQL database containing a mindmap application.
+
+---
 
 ## Setup
 
@@ -50,14 +52,20 @@ A Claude MCP (Model Context Protocol) server for interacting with a PostgreSQL d
 
 5. **Restart Claude Desktop** for the MCP connection to activate.
 
-6. **Reference in general Prompt** Optional but recommended by the Developer.
+6. **Reference in Claude Prompt** (Optional but recommended)
 
+Add this to your Claude system prompt for enhanced integration:
+
+```
 Mindmap MCP (Postgres — persistent memory/worklog)
 - READ: mindmap:query with {sql}. WRITE: mindmap:execute with parameterized SQL ($1,$2…) + params array. Never string-interpolate values.
 - Discover schema first: list tables, then column names via information_schema before writing.
 - BEFORE assuming any project/infra state: query mindmap first (ILIKE search on relevant keywords/hostnames).
 - When asked to "save/remember something": INSERT a node with title, content, category, and timestamps; keep entries concise and self-contained.
 - Mindmap is authoritative over model memory — on conflict, trust the DB.
+```
+
+---
 
 ## Usage
 
@@ -69,24 +77,33 @@ Once configured, you can use Claude to:
 - Debug database issues
 - Export data
 
-Example: Ask Claude "Show me the tables in the mindmap database" or "Query the latest entries from [table_name]"
+**Example queries:**
+- "What did I do on July 10th?"
+- "How did I set up the MCP server in this project?"
+- "Show me all notes tagged with 'deployment'"
+- "Save this architecture decision to my mindmap"
+- "What was the issue we had with database migrations last week?"
+
+---
 
 ## Services
 
 ### PostgreSQL (`db`)
 - Main database service
-- Port: 5432
+- Port: `5432`
 - Auto-restart enabled
 
-### pgweb (`http://localhost:8081`)
-- Web UI for database administration
-- No authentication required locally
+### pgweb UI (`http://localhost:8081`)
+- Web-based database administration
+- Zero authentication (local only)
 - Auto-restart enabled
 
 ### pgbackup
 - Automatic hourly backups
-- Keeps backups for 3 days
+- Retention: 3 days
 - Timezone: Asia/Bangkok
+
+---
 
 ## Stopping Services
 
@@ -98,6 +115,8 @@ To stop and remove volumes:
 ```bash
 docker compose down -v
 ```
+
+---
 
 ## Troubleshooting
 
@@ -114,11 +133,16 @@ docker compose down -v
 - Check that port 8081 is not in use: `lsof -i :8081`
 - Restart the service: `docker compose restart pgweb`
 
-## Files
+---
 
-- `claude_desktop_config.json` - MCP server configuration for Claude Desktop
-- `compose.yml` - Docker Compose configuration
-- `.env` - Environment variables (passwords, etc.) — in .gitignore
-- `.env.template` - Template for environment variables
-- `backups/` - Directory containing automatic database backups
-- `mindmap-latest.sql.gz` - SQL database dump for initialization
+## Project Files
+
+| File | Purpose |
+|------|---------|
+| `claude_desktop_config.json` | MCP server configuration for Claude Desktop |
+| `compose.yml` | Docker Compose services definition |
+| `.env` | Environment variables (ignored in git) |
+| `.env.template` | Template for `.env` variables |
+| `backups/` | Automatic database backups directory |
+| `mindmap-latest.sql.gz` | SQL database dump for initialization |
+| `README.md` | This file |
