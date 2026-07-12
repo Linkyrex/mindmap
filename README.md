@@ -14,7 +14,7 @@ A Claude MCP (Model Context Protocol) server for interacting with a PostgreSQL d
 
 1. **Clone or set up the repository:**
    ```bash
-   git clone <your-repo>
+   git clone (https://github.com/Linkyrex/mindmap)
    cd mindmap
    ```
 
