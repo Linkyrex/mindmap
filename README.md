@@ -144,5 +144,4 @@ docker compose down -v
 | `.env` | Environment variables (ignored in git) |
 | `.env.template` | Template for `.env` variables |
 | `backups/` | Automatic database backups directory |
-| `mindmap-latest.sql.gz` | SQL database dump for initialization |
 | `README.md` | This file |
