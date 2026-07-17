@@ -31,5 +31,42 @@ services:
     depends_on:
       - db
 
+  restic-backup:
+    image: mazzolino/restic
+    restart: unless-stopped
+    hostname: mindmap-backup
+    environment:
+      - TZ=${TIMEZONE}
+      - RESTIC_REPOSITORY=sftp:restic@192.168.1.12:/srv/restic-repo
+      - RESTIC_PASSWORD_FILE=/run/secrets/restic-password
+      - RESTIC_BACKUP_SOURCES=/data
+      - BACKUP_CRON=0 0 * * * *
+      - RUN_ON_STARTUP=true
+    volumes:
+      - ./backups:/data:ro
+      - ${RESTIC_SSH_DIR}/known_hosts:/run/secrets/.ssh/known_hosts:ro
+      - ${RESTIC_SSH_DIR}/config:/run/secrets/.ssh/config:ro
+      - ${RESTIC_SSH_KEY}:/run/secrets/.ssh/sangat:ro
+      - ${RESTIC_PASSWORD_FILE}:/run/secrets/restic-password:ro
+    depends_on:
+      - pgbackup
+
+  restic-prune:
+    image: mazzolino/restic
+    restart: unless-stopped
+    hostname: mindmap-backup
+    environment:
+      - TZ=${TIMEZONE}
+      - RESTIC_REPOSITORY=sftp:restic@192.168.1.12:/srv/restic-repo
+      - RESTIC_PASSWORD_FILE=/run/secrets/restic-password
+      - PRUNE_CRON=0 0 2 * * *
+      - RESTIC_FORGET_ARGS=--keep-daily 7 --keep-weekly 4
+      - SKIP_INIT=true
+    volumes:
+      - ${RESTIC_SSH_DIR}/known_hosts:/run/secrets/.ssh/known_hosts:ro
+      - ${RESTIC_SSH_DIR}/config:/run/secrets/.ssh/config:ro
+      - ${RESTIC_SSH_KEY}:/run/secrets/.ssh/sangat:ro
+      - ${RESTIC_PASSWORD_FILE}:/run/secrets/restic-password:ro
+
 volumes:
   pgdata:
